@@ -82,23 +82,25 @@ $(document).on("click", ".devoured", function(){
     };
   updateBurger(id);
   eatenBurgers(eatenBurger);
-
+  
+  
   showEaten();
 })
 
 function submitBurger(burger) {
     $.post("/api/burgers/", burger, function() {  
         console.log("posted");
+        
         showBurger(); 
            
     });
 
-    showEaten();
+    
 }
 
 function showBurger(){
       
-      $("#undevoured").empty();  
+  $("#undevoured").empty();     
       $.get("/api/burgers/", function(data){
           console.log(data);
           //https://imgur.com/a/YgrLxR4
@@ -117,7 +119,7 @@ function showBurger(){
 
 function showEaten(){
   
-  $("#devoured").empty();
+  $("#devoured").empty(); 
   $.get("/api/eaten/", function(data){
     console.log(data);
           //https://imgur.com/a/YgrLxR4
@@ -135,7 +137,7 @@ function showEaten(){
 function eatenBurgers(burger){
   $.post("/api/eaten/", burger, function(){
     console.log(burger.burger_name);
-    showBurger();
+    // showBurger();
     
   })
 }

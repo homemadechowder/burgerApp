@@ -1,7 +1,3 @@
-
-
-
-
 // *********************************************************************************
 // Server.js 
 // *********************************************************************************
@@ -9,7 +5,7 @@
 // Dependencies
 // =============================================================
 var express = require("express");
-var parser = require("body-parser");
+
 
 // Sets up the Express App
 // =============================================================
@@ -23,12 +19,17 @@ app.use(express.json());
 // Static directory to be served
 app.use(express.static("app/public"));
 
+var db = require("./models");
+
 // Routes
 // =============================================================
-require("./app/routes/api-routes.js")(app);
+require("./routes/api-routes.js")(app);
+require("./routes/html-routes")(app);
 
 // Starts the server to begin listening
 // =============================================================
-app.listen(PORT, function() {
-  console.log("App listening on PORT " + PORT);
+db.sequelize.sync({ force: true }).then(function() {
+  app.listen(PORT, function() {
+    console.log("App listening on PORT " + PORT);
+  });
 });

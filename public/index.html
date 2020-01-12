@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Burger Eater</title>
+  <!-- Latest compiled and minified CSS & JS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src= "https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <div class="container">
+    <div class="jumbotron">
+      <h1>Burger Eater</h1>
+      <h3><i>You don't have to eat a whole cheeseburger, just take a piece of the cheeseburger. If you slow it down, eat in courses, your body, mind, stomach will catch up with this full feeling and you won't eat as much.</i> - Guy Fieri</h3>
+      <hr>
+      <div class = "row" id = burger_list>
+        <h2 style = "border: 1px solid black" class = "col-6">List of Burgers:
+          <div id = "undevoured"></div>
+        </h2>
+        
+
+        <h2 style = "border: 1px solid black" class = "col-6">List of Devoured Burgers: 
+          <div id = "devoured"></div>
+        </h2>
+        
+      </div>
+    </div>
+    
+    <div class="row">
+
+      <div class="col-12">
+
+        <div class="card">
+            <div class="card-header">
+              <h3><strong>Add a burger</strong></h3>
+            </div>
+            <div class="card-body">
+              <form method="POST" role="form">
+  
+                <div class="form-group">
+                  <label for="name">Burger Name</label>
+                  <input type="text" class="form-control" id="burger">
+                </div>
+                <br>
+  
+              </form>
+              <br>
+              <div class="text-right">
+                <button type="submit" class="btn btn-primary btn-md" id="add-btn"><span class="fa fa-fire"></span>Add it</button>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+   </div> 
+   <script type="text/javascript">
+$("#add-btn").on("click", function(event){
+        console.log("added");
+        event.preventDefault();
+        var burger = $("#burger");
+        
+        var newBurger = {
+            burger_name: burger.val().trim()
+        };
+
+        submitBurger(newBurger);
+
+})
+
+$(document).on("click", ".devoured", function(){
+  console.log($(this).attr("burgerId"));
+  id = $(this).attr("burgerId");
+  // updateBurger(id);
+  name = $(this).attr("burgerName");
+  var eatenBurger = 
+    {
+      burger_name: name.trim()
+    };
+  updateBurger(id);
+  eatenBurgers(eatenBurger);
+
+  showEaten();
+})
+
+function submitBurger(burger) {
+    $.post("/api/burgers/", burger, function() {  
+        console.log("posted");
+        showBurger(); 
+           
+    });
+
+    showEaten();
+}
+
+function showBurger(){
+      
+      $("#undevoured").empty();  
+      $.get("/api/burgers/", function(data){
+          console.log(data);
+          //https://imgur.com/a/YgrLxR4
+          //Link for devoured ^^
+          for (i = 0; i < data.length; i++){
+          var entry = "<br><img style = 'width: 150px; height: 150px;' src = https://i.pinimg.com/originals/0c/75/68/0c7568c03187c20e87cdd9e4b2bbdc9b.jpg > &nbsp"
+           + data[i].burger_name;
+          var button = "<button burgerName = '" + data[i].burger_name + "' burgerId = '" + data[i].id + "'' type = 'submit' style = 'float: right' class = 'devoured'> Eat </button>"
+          $("#undevoured")
+          .append(entry 
+           + button);
+          }        
+     })
+     showEaten();
+}
+
+function showEaten(){
+  
+  $("#devoured").empty();
+  $.get("/api/eaten/", function(data){
+    console.log(data);
+          //https://imgur.com/a/YgrLxR4
+          //Link for devoured ^^
+          for (i = 0; i < data.length; i++){
+          var entry2 = "<br><img style = 'width: 150px; height: 150px;' src = https://imgur.com/4FhloH3.png > &nbsp"
+           + data[i].burger_name;
+          
+          $("#devoured")
+          .append(entry2);
+          }    
+  });
+}
+
+function eatenBurgers(burger){
+  $.post("/api/eaten/", burger, function(){
+    console.log(burger.burger_name);
+    showBurger();
+    
+  })
+}
+
+  // Update a given post, bring user to the blog page when done
+function updateBurger(id) {
+    $.ajax({
+      method: "PUT",
+      url: "/api/burgers/" + id
+    })
+      .then(function() {
+       deleteBurger(id);
+    });
+}
+
+function deleteBurger(id){
+  $.ajax({
+    method: "DELETE",
+    url: "/api/burgers/" + id
+  }).then(function(data){
+    console.log("Burger Devoured");
+    console.log(data);
+    showBurger();
+ 
+  })
+}
+  </script>
+</body>
+</html>
